@@ -3,7 +3,7 @@ from question import Question
 import re
 
 class HR(Parser):
-    def load_question(self, input):
+    def load_question(self, input, xml, quiz):
         current_pos = 0
         # extract metadata
         metadata = re.search('^(.+?)\n', input).group(1)
@@ -16,7 +16,7 @@ class HR(Parser):
         difficulties = ['Easy', 'Medium', 'Hard']
         difficulty = difficulties[int(difficulty) - 1]
         
-        question = Question()
+        question = Question(xml, quiz)
         question.addTag(created_on)
         question.addTag(difficulty)
         question.addTag(topic)
@@ -32,7 +32,7 @@ class HR(Parser):
 
         # add answers
         while True:
-            _answer = re.search('^(.+?)(?=\n[+-])', input[current_pos:])
+            _answer = re.search('^(.+?)(?=\n[+-]?)', input[current_pos:])
             if _answer:
                 answer = _answer.group(0)
                 question.addAnswer(answer[2:], answer[0] == '+')
