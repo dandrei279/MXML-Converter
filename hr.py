@@ -40,4 +40,4 @@ class HR(Parser):
             else:
                 break
 
-        return question
+        return question.toXML()
