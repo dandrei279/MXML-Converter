@@ -1,12 +1,16 @@
 from xml.dom import minidom
 
 class Question:
-    def __init__(self, question):
-        self.question = question
-        self.name = question[0:20]
+    def __init__(self):
         self.tags = []
         self.answers = []
         self.correct_answers = []
+        self.question = ""
+        self.name = ""
+
+    def setQuestion(self, question):
+        self.question = question
+        self.name = question[0:28] + "..."
 
     def addAnswer(self, answer, correct=False):
         if correct:
