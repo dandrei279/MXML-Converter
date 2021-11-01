@@ -9,6 +9,7 @@ if __name__ == "__main__":
     parser.add_argument(dest='input', help='input file')
     parser.add_argument('-o', '--output', type=str, dest='output', help='output file', default='questions.xml')
     parser.add_argument('-f', '--format', type=str, default='hr', dest='file_format', choices=['hr'])
+    parser.add_argument('-c', '--category', type=str, default='', dest='category')
 
     # Parse and print the results
     args = parser.parse_args()
@@ -30,9 +31,24 @@ if __name__ == "__main__":
     # add last question
     hr_questions.append(hr_question)
     
+    # create XML Tree
     xml = minidom.Document()
     quiz = xml.createElement('quiz')
     xml.appendChild(quiz)
+
+    # mention Category if necessary
+    if args.category != '':
+        question = xml.createElement('question')
+        quiz.appendChild(question)
+
+        category = xml.createElement('category')
+        question.appendChild(category)
+
+        text = xml.createElement('text')
+        category.appendChild(text)
+
+        _category = xml.createTextNode(args.category)
+        text.appendChild(_category)
 
     for hr_question in hr_questions:
         parser.load_question(hr_question, xml, quiz)
