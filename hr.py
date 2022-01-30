@@ -6,7 +6,6 @@ class HR(Parser):
     def load_question(self, input, xml, quiz):
         current_pos = 0
         # extract metadata
-        
         metadata = re.search('^(.+?)\n', input).group(1)
         created_on = re.search('created_on:(.+?)(?=;)', metadata).group(0)
         difficulty = re.search('difficulty:([123]);', metadata).group(1)

@@ -14,7 +14,6 @@ class Question:
     def setQuestion(self, raw_question):
         question = raw_question.replace("\n", " <br> ")
         self.question = question
-        # self.name = question[0:28] + "..."
 
     def addAnswer(self, answer, correct=False):
         if correct:
@@ -57,16 +56,6 @@ class Question:
         _single = self.xml.createTextNode(str(self.singleAnswer()).lower())
         single.appendChild(_single)
 
-        # <name> ... </name>
-        name = self.xml.createElement('name')
-        question.appendChild(name)
-
-        text = self.xml.createElement('text')
-        name.appendChild(text)
-
-        _name = self.xml.createTextNode(self.name)
-        text.appendChild(_name)
-
         # <questiontext> ... </questiontext>
         questiontext = self.xml.createElement('questiontext')
         questiontext.setAttribute('format', 'html')
@@ -82,43 +71,48 @@ class Question:
         if file_placeholder != None:
             # replace placeholder with HTML
             self.filepath = file_placeholder.group(1)
+            self.filename = re.search('([\\w\.]*$)', self.filepath).group(0)
+
             self.hasAttachment = True
+            
             html_class = 'class="img-fluid atto_image_button_text-bottom"'
             html_style = 'style="max-height:500px;max-width:500px;"'
-            html_img_tag = '<img src="@@PLUGINFILE@@/{filepath}" alt="img" {html_class} {html_style}>'.format(
-                filepath = self.filepath,
+            html_img_tag = '<img src="@@PLUGINFILE@@/{filename}" alt="img" {html_class} {html_style}>'.format(
+                filename = self.filename,
                 html_style = html_style,
                 html_class = html_class
             )
             self.question = self.question.replace(file_placeholder.group(0), html_img_tag)
+        
+        self.name = self.question[0:28] + "..."
 
         _questiontext = self.xml.createTextNode(self.question)
         text.appendChild(_questiontext)
 
         if self.hasAttachment:
-            self.filename = re.search('([\\w\.]*$)', self.filepath).group(0)
-            filedir_regex = re.search('(.*/)', self.filepath)
-
-            if filedir_regex == None:
-                self.filedir = '/'
-            else:
-                self.filedir = filedir_regex.group(0)
 
             file_attachment = self.xml.createElement('file')
             file_attachment.setAttribute('encoding', 'base64')
             file_attachment.setAttribute('name', self.filename)
-            file_attachment.setAttribute('path', self.filedir)
+            file_attachment.setAttribute('path', '/')
             questiontext.appendChild(file_attachment)
 
             import base64
             base64_file = base64.b64encode(open(self.filepath, 'rb').read())
             base64_file_string = base64_file.decode('utf8')
-            # print(base64_file_string)
-            # exit(0)
 
             file_content = self.xml.createTextNode(base64_file_string)
             file_attachment.appendChild(file_content)
 
+        # <name> ... </name>
+        name = self.xml.createElement('name')
+        question.appendChild(name)
+
+        text = self.xml.createElement('text')
+        name.appendChild(text)
+
+        _name = self.xml.createTextNode(self.name)
+        text.appendChild(_name)
 
         # <tags> ... </tags>
         tags = self.xml.createElement('tags')
