@@ -25,8 +25,8 @@ class HR(Parser):
         current_pos += len(metadata) + 1
 
         # set question text
-        questiontext = re.search('^(.+?)\n[+-]', input[current_pos:]).group(1)
-        question.setQuestion(questiontext)
+        questiontext = re.search('^((.|\n)+?)(\n[+-])', input[current_pos:]).group(1)
+        question.setQuestion(questiontext.replace("\n", " <br> "))
 
         current_pos += len(questiontext) + 1
 

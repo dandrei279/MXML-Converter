@@ -10,9 +10,10 @@ class Question:
         self.question = ""
         self.name = ""
 
-    def setQuestion(self, question):
+    def setQuestion(self, raw_question):
+        question = raw_question.replace("\n", " <br> ")
         self.question = question
-        self.name = question[0:28] + "..."
+        # self.name = question[0:28] + "..."
 
     def addAnswer(self, answer, correct=False):
         if correct:
