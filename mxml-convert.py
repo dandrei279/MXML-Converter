@@ -39,6 +39,7 @@ if __name__ == "__main__":
     # mention Category if necessary
     if args.category != '':
         question = xml.createElement('question')
+        question.setAttribute('type', 'category')
         quiz.appendChild(question)
 
         category = xml.createElement('category')
