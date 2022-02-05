@@ -32,7 +32,7 @@ class HR(Parser):
 
         # add answers
         while True:
-            _answer = re.search('^(.+?)(?=\n[+-]?)', input[current_pos:])
+            _answer = re.search('^([+-](.|\n[^+\-\n])+)', input[current_pos:])
             if _answer:
                 answer = _answer.group(0)
                 question.addAnswer(answer[2:], answer[0] == '+')

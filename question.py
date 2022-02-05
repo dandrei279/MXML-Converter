@@ -18,7 +18,7 @@ class Question:
     def addAnswer(self, answer, correct=False):
         if correct:
             self.correct_answers.append(len(self.answers))
-        self.answers.append(answer)
+        self.answers.append(answer.replace("\n", " <br> "))
 
     def addTag(self, tag):
         self.tags.append(tag)
