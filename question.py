@@ -1,5 +1,10 @@
+from pygments import highlight
+from pygments.lexers import guess_lexer
+from pygments.formatters import ImageFormatter
 from xml.dom import minidom
+
 import re
+import time
 
 class Question:
     def __init__(self, xml, quiz):
@@ -11,14 +16,35 @@ class Question:
         self.question = ""
         self.name = ""
 
+    def HTMLize(self, string):
+        # Format code blocks and translate `\n` to `<br>`
+        _code_block = re.search('(```\n)((.|\n)*)(```)', string)
+        if _code_block:
+            # get the code
+            code_block = _code_block.group(2)
+
+            # uniq file name for the image
+            filename = 'code_{current_time}.png'.format(current_time = time.time())
+
+            # generate formatted code as PNG file
+            with open(filename, "wb+") as f:
+                f.write(highlight(code_block, guess_lexer(code_block), ImageFormatter()))
+
+            # use placeholder to embed code in questiontext
+            string = string.replace(_code_block.group(0), "###_{filename}_###").format(filename = filename)
+
+            # look for other code_sequence
+            _code_block = re.search('(?:```)(.|\n)*(?:```)', string)
+        return string.replace("\n", " <br> ")
+
     def setQuestion(self, raw_question):
-        question = raw_question.replace("\n", " <br> ")
+        question = self.HTMLize(raw_question)
         self.question = question
 
     def addAnswer(self, answer, correct=False):
         if correct:
             self.correct_answers.append(len(self.answers))
-        self.answers.append(answer.replace("\n", " <br> "))
+        self.answers.append(self.HTMLize(answer))
 
     def addTag(self, tag):
         self.tags.append(tag)
@@ -103,6 +129,11 @@ class Question:
 
             file_content = self.xml.createTextNode(base64_file_string)
             file_attachment.appendChild(file_content)
+
+            # remove generated images (code images)
+            if re.search('code_[0-9]*\.[0-9]*\.png', self.filepath):
+                import os
+                os.remove(self.filepath)
 
         # <name> ... </name>
         name = self.xml.createElement('name')
