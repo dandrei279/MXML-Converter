@@ -5,3 +5,29 @@ Question?
 - Incorrect answer
 - Incorrect answer
 
+created_on:YYYY-MM-DD;difficulty:<1-3>;topic:<topic>
+Multi line also works
+Question?
++ Correct
+answer
++ Correct answer
+- Incorrect answer
+- Incorrect answer
+
+created_on:YYYY-MM-DD;difficulty:<1-3>;topic:<topic>
+```
+# this is a code snippet
+print("Hello Moodle")
+```
++ Correct answer
++ Correct answer
+- Incorrect answer
+- Incorrect answer
+
+created_on:YYYY-MM-DD;difficulty:<1-3>;topic:<topic>
+You can also use images just like this to include foo.png file:
+###_foo.png_###
++ Correct answer
++ Correct answer
+- Incorrect answer
+- Incorrect answer
