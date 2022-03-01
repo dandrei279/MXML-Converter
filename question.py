@@ -15,6 +15,7 @@ class Question:
         self.correct_answers = []
         self.question = ""
         self.name = ""
+        self.feedback = ""
 
     def HTMLize(self, string):
         # Format code blocks and translate `\n` to `<br>`
@@ -36,6 +37,9 @@ class Question:
             # look for other code_sequence
             _code_block = re.search('(?:```)(.|\n)*(?:```)', string)
         return string.replace("\n", " <br> ")
+
+    def setFeedback(self, feedback):
+        self.feedback = self.HTMLize(feedback)
 
     def setQuestion(self, raw_question):
         question = self.HTMLize(raw_question)
@@ -144,6 +148,16 @@ class Question:
 
         _name = self.xml.createTextNode(self.name)
         text.appendChild(_name)
+
+        if self.feedback:
+            # <generalFeedback>
+            generalfeedback = self.xml.createElement('generalfeedback')
+            question.appendChild(generalfeedback)
+
+            text = self.xml.createElement('text')
+            generalfeedback.appendChild(text)
+            _generalfeedback = self.xml.createTextNode(self.feedback)
+            text.appendChild(_generalfeedback)
 
         # <tags> ... </tags>
         tags = self.xml.createElement('tags')

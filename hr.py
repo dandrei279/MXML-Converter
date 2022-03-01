@@ -24,6 +24,13 @@ class HR(Parser):
 
         current_pos += len(metadata) + 1
 
+        # add general feedback (if any)
+        feedbackBlock = re.search('(%feedback%\n)((.|\n)*)(\n%~feedback%)', input[current_pos:])
+        if feedbackBlock:
+            feedback = feedbackBlock.group(2)
+            question.setFeedback(feedback)
+            current_pos += len(feedbackBlock.group(0)) + 1
+
         # set question text
         questiontext = re.search('^((.|\n)+?)(\n[+-])', input[current_pos:]).group(1)
         question.setQuestion(questiontext)
