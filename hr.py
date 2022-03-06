@@ -32,7 +32,8 @@ class HR(Parser):
             current_pos += len(feedbackBlock.group(0)) + 1
 
         # set question text
-        questiontext = re.search('^((.|\n)+?)(\n[+-])', input[current_pos:]).group(1)
+        questionMatch = re.search('^((.|\n)+?)(\n[+-])', input[current_pos:])
+        questiontext = questionMatch.group(1)
         question.setQuestion(questiontext)
 
         current_pos += len(questiontext) + 1

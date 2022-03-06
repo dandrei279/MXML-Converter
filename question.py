@@ -1,4 +1,5 @@
 from pygments import highlight
+from pygments.lexers.c_cpp import CLexer
 from pygments.lexers import guess_lexer
 from pygments.formatters import ImageFormatter
 from xml.dom import minidom
@@ -27,9 +28,10 @@ class Question:
             # uniq file name for the image
             filename = 'code_{current_time}.png'.format(current_time = time.time())
 
+            lexer = CLexer()
             # generate formatted code as PNG file
             with open(filename, "wb+") as f:
-                f.write(highlight(code_block, guess_lexer(code_block), ImageFormatter()))
+                f.write(highlight(code_block, lexer, ImageFormatter()))
 
             # use placeholder to embed code in questiontext
             string = string.replace(_code_block.group(0), "###_{filename}_###").format(filename = filename)
