@@ -24,13 +24,6 @@ class HR(Parser):
 
         current_pos += len(metadata) + 1
 
-        # add general feedback (if any)
-        feedbackBlock = re.search('(%feedback%\n)((.|\n)*)(\n%~feedback%)', input[current_pos:])
-        if feedbackBlock:
-            feedback = feedbackBlock.group(2)
-            question.setFeedback(feedback)
-            current_pos += len(feedbackBlock.group(0)) + 1
-
         # set question text
         questionMatch = re.search('^((.|\n)+?)(\n[+-])', input[current_pos:])
         questiontext = questionMatch.group(1)
@@ -40,12 +33,19 @@ class HR(Parser):
 
         # add answers
         while True:
-            _answer = re.search('^([+-](.|\n[^+\-\n])+)', input[current_pos:])
+            _answer = re.search('^([+-](.|\n[^+\-\n%])+)', input[current_pos:])
             if _answer:
                 answer = _answer.group(0)
                 question.addAnswer(answer[2:], answer[0] == '+')
                 current_pos += len(answer) + 1
             else:
                 break
+
+        # add general feedback (if any)
+        feedbackBlock = re.search('(%feedback%\n)((.|\n)*)(\n%~feedback%)', input[current_pos:])
+        if feedbackBlock:
+            feedback = feedbackBlock.group(2)
+            question.setFeedback(feedback)
+            current_pos += len(feedbackBlock.group(0)) + 1
 
         return question.toXML()
