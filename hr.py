@@ -3,6 +3,25 @@ from question import Question
 import re
 
 class HR(Parser):
+    def parseQuestion(self, question, questionText):
+        current_pos = 0
+        # set question text
+        questionMatch = re.search('^((.|\n)+?)(\n[+-])', questionText[current_pos:])
+        questiontext = questionMatch.group(1)
+        question.setQuestion(questiontext)
+
+        current_pos += len(questiontext) + 1
+
+        # add answers
+        while True:
+            _answer = re.search('^([+-](.|\n[^+\-\n%])+)', questionText[current_pos:])
+            if _answer:
+                answer = _answer.group(0)
+                question.addAnswer(answer[2:], answer[0] == '+')
+                current_pos += len(answer) + 1
+            else:
+                break
+
     def load_question(self, input, xml, quiz):
         current_pos = 0
         # extract metadata
@@ -24,25 +43,13 @@ class HR(Parser):
 
         current_pos += len(metadata) + 1
 
-        # set question text
-        questionMatch = re.search('^((.|\n)+?)(\n[+-])', input[current_pos:])
-        questiontext = questionMatch.group(1)
-        question.setQuestion(questiontext)
+        questionBlock = re.search('(%question%\n)((.|\n)*)(\n%~question%)', input)
+        questionText = questionBlock.group(2)
 
-        current_pos += len(questiontext) + 1
-
-        # add answers
-        while True:
-            _answer = re.search('^([+-](.|\n[^+\-\n%])+)', input[current_pos:])
-            if _answer:
-                answer = _answer.group(0)
-                question.addAnswer(answer[2:], answer[0] == '+')
-                current_pos += len(answer) + 1
-            else:
-                break
+        self.parseQuestion(question, questionText)
 
         # add general feedback (if any)
-        feedbackBlock = re.search('(%feedback%\n)((.|\n)*)(\n%~feedback%)', input[current_pos:])
+        feedbackBlock = re.search('(%feedback%\n)((.|\n)*)(\n%~feedback%)', input)
         if feedbackBlock:
             feedback = feedbackBlock.group(2)
             question.setFeedback(feedback)
