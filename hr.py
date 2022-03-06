@@ -22,37 +22,36 @@ class HR(Parser):
             else:
                 break
 
-    def load_question(self, input, xml, quiz):
+    def parseTags(self, question, questionText):
         current_pos = 0
-        # extract metadata
-        metadata = re.search('^(.+?)\n', input).group(1)
-        created_on = re.search('created_on:(.+?)(?=;)', metadata).group(0)
-        difficulty = re.search('difficulty:([123]);', metadata).group(1)
-        topic = re.search('topic:(.+?);', metadata).group(1)
-        type_question = re.search('type:(.+?)$', metadata).group(1)
 
-        # set difficulty according to Easy - Medium - Hard scale
-        difficulties = ['Easy', 'Medium', 'Hard']
-        difficulty = difficulties[int(difficulty) - 1]
-        
+        # add tags
+        while True:
+            _tag = re.search('^([\w\s]+)(;|$)', questionText[current_pos:])
+            if _tag:
+                tag = _tag.group(1)
+                question.addTag(tag)
+                current_pos += len(tag) + 1
+            else:
+                break
+
+    def load_question(self, input, xml, quiz):
         question = Question(xml, quiz)
-        question.addTag(created_on)
-        question.addTag(difficulty)
-        question.addTag(topic)
-        question.addTag(type_question)
 
-        current_pos += len(metadata) + 1
+        # extract tags
+        tagsBlock = re.search('(%tags%\n)((.|\n)*)(\n%~tags%)', input)
+        tagsText = tagsBlock.group(2)
+        self.parseTags(question, tagsText)
 
+        # extract question and answers
         questionBlock = re.search('(%question%\n)((.|\n)*)(\n%~question%)', input)
         questionText = questionBlock.group(2)
-
         self.parseQuestion(question, questionText)
 
-        # add general feedback (if any)
+        # extract general feedback (if any)
         feedbackBlock = re.search('(%feedback%\n)((.|\n)*)(\n%~feedback%)', input)
         if feedbackBlock:
             feedback = feedbackBlock.group(2)
             question.setFeedback(feedback)
-            current_pos += len(feedbackBlock.group(0)) + 1
 
         return question.toXML()
