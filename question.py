@@ -38,6 +38,7 @@ class Question:
 
             # look for other code_sequence
             _code_block = re.search('(?:```)(.|\n)*(?:```)', string)
+        string = re.sub('`(.*)`', '<code>\g<1></code>', string)
         return string.replace("\n", " <br> ")
 
     def setFeedback(self, feedback):
